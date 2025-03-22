@@ -8,6 +8,9 @@ from datetime import datetime,timedelta     # datetime module is required for wo
 # Make the variables and function in set_data.py available in this code (without needing 'set_data.' prefix)
 from set_data import customers,events,unique_id,display_formatted_row   
 
+continue_text = "\nPress Enter to continue."
+
+customers = sorted(customers, key=lambda x: (x[2], x[1])) # ordered by family name, then first name
 
 def list_all_customers():
     """
@@ -23,17 +26,45 @@ def list_all_customers():
         email = customer[4]
 
         display_formatted_row([id,fname,famname,birthdate,email],format_str)     # Use the display_formatted_row() function to display each row with consistent spacing
-    input("\nPress Enter to continue.")
+    input(continue_text)
 
 def list_customers_and_tickets():
     """
     Lists Customer details (including birth date), and the events they have purchased tickets to attend."""
-    input("\nPress Enter to continue.")
+    
+    format_str = "{: <5} {: <15} {: <15} {: <14} {: <28} {: <30}"    
+    display_formatted_row(["ID","Family Name","First Name","Birth Date","e-Mail", "Event(s)"],format_str)  
+    event_names = sorted(events.keys())
+    for customer in customers:
+        tickets=[]
+        for event_name in event_names:
+            customer_data = events[event_name]["customers"]
+            for data in customer_data:
+                if data[0] == customer[0]:
+                    tickets.append((event_name, data[1]))
+                    # print(f"EV Name: {event_name} | Quantity: {data[1]}")
+        if len(tickets) == 0:
+            tickets = 'N/A'
+        else:
+            ticket_info = ', '.join(f"{ticket[0]} ({ticket[1]})" for ticket in tickets)  # Extract the first element
+            tickets = ticket_info
+        customer.append(str(tickets))
+
+        id = customer[0]
+        fname = customer[1]
+        famname = customer[2]
+        birthdate = customer[3].strftime("%d %b %Y")
+        email = customer[4]
+        event = customer[5]
+
+        display_formatted_row([id,famname,fname,birthdate,email,event],format_str)   
+
+    input(continue_text)
 
 def list_event_details():
     """
     List the events, show all details except Customers who have purchased tickets."""
-    input("\nPress Enter to continue.")
+    input(continue_text)
 
 def buy_tickets():
     """
@@ -63,19 +94,28 @@ def disp_menu():
     print(" 4 - Buy Tickets")
     print(" 5 - Future Events with tickets")
     print(" 6 - Add New Customer")
-    print(" X - eXit (stops the program)")
+    print(" X - Exit (stops the program)")
 
+
+print("### Disable the main program for now so I can do some dev ###")
+print("")
 
 # ------------ This is the main program ------------------------
 
 # Don't change the menu numbering or function names in this menu.
 # Although you can add arguments to the function calls, if you wish.
 # Repeat this loop until the user enters an "X" or "x"
+
 response = ""
 while response != "X":
     disp_menu()
     # Display menu for the first time, and ask for response
     response = input("Please enter menu choice: ")    
+
+    # Make the string uppercase either x or X is able to exit the program
+    if response == "x":
+        response = response.upper()
+
     if response == "1":
         list_all_customers()
     elif response == "2":

@@ -1,6 +1,6 @@
 # ============== SELWYN EVENT TICKETING SYSTEM ==============
-# Student Name: 
-# Student ID : 
+# Student Name: Kim Ng (Lion)
+# Student ID : 1167513
 # =============================================================
 
 
