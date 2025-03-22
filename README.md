@@ -47,3 +47,18 @@ Add the following features to the system:
 - The provided _events_your_name.py_ Python file contains a menu structure and partially completed functions. These functions must not be deleted or renamed, but you may add arguments/parameters to these functions. You may also add additional functions of your own. Remember to rename the file to include your name.
 
 _\* For the purposes of this assignment, it is assumed the purchaser of tickets is responsible for ensuring their group all meet the age restriction._
+
+---
+
+### Reference
+
+- [Setting multiple accounts on git and vscode](https://stackoverflow.com/questions/70755815/setting-multiple-accounts-on-git-and-vscode)
+
+_You can specify a user.name and a user.email for each repo. Run below command in the git repo where you need to specify the user/email_
+
+```
+git config user.name <user-name>
+git config user.email <user-email>
+```
+
+_Personnaly, i have a global configuration (i.e. git config --global user.name ) for my work (because i have a looooot of projects to deal with), and for my personnal projects (just a few) I do the local configuration like above._
