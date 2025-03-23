@@ -33,7 +33,7 @@ def list_customers_and_tickets():
     Lists Customer details (including birth date), and the events they have purchased tickets to attend."""
     
     format_str = "{: <5} {: <15} {: <15} {: <14} {: <28} {: <30}"    
-    display_formatted_row(["ID","Family Name","First Name","Birth Date","e-Mail", "Event(s)"],format_str)  
+    display_formatted_row(["ID","Family Name","First Name","Birth Date","e-Mail", "Events (Tickets)"],format_str)  
     event_names = sorted(events.keys())
     for customer in customers:
         tickets=[]
@@ -42,7 +42,6 @@ def list_customers_and_tickets():
             for data in customer_data:
                 if data[0] == customer[0]:
                     tickets.append((event_name, data[1]))
-                    # print(f"EV Name: {event_name} | Quantity: {data[1]}")
         if len(tickets) == 0:
             tickets = 'N/A'
         else:
@@ -64,6 +63,19 @@ def list_customers_and_tickets():
 def list_event_details():
     """
     List the events, show all details except Customers who have purchased tickets."""
+
+    sorted_events = {k: events[k] for k in sorted(events)} #  sort the events via dictionary comprehension, shortcut to create a new dictionary.
+    format_str = "{: <20} {: <18} {: <15} {: <14} {: <28}"    
+    display_formatted_row(["Event Name","Age Restriction","Event Date","Capacity","Tickets Sold"],format_str)  
+    for event_name in sorted_events:
+        event = sorted_events[event_name]
+        name=event_name
+        age_restriction=str(event['age_restriction'])
+        date=event['event_date'].strftime("%d %b %Y")
+        capacity=str(event['capacity'])
+        tickets_sold=str(event['tickets_sold'])
+        display_formatted_row([name,age_restriction,date,capacity,tickets_sold],format_str) \
+        
     input(continue_text)
 
 def buy_tickets():
@@ -97,8 +109,10 @@ def disp_menu():
     print(" X - Exit (stops the program)")
 
 
+print("")
 print("### Disable the main program for now so I can do some dev ###")
 print("")
+
 
 # ------------ This is the main program ------------------------
 
@@ -109,8 +123,11 @@ print("")
 response = ""
 while response != "X":
     disp_menu()
+    
+    print("")
     # Display menu for the first time, and ask for response
     response = input("Please enter menu choice: ")    
+    print("")
 
     # Make the string uppercase either x or X is able to exit the program
     if response == "x":
