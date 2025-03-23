@@ -10,7 +10,8 @@ from set_data import customers,events,unique_id,display_formatted_row
 
 continue_text = "\nPress Enter to continue."
 
-customers = sorted(customers, key=lambda x: (x[2], x[1])) # ordered by family name, then first name
+sorted_customers = sorted(customers, key=lambda x: (x[2], x[1])) # ordered by family name, then first name
+sorted_events = {k: events[k] for k in sorted(events)} #  sort the events via dictionary comprehension, shortcut to create a new dictionary.
 
 def list_all_customers():
     """
@@ -35,7 +36,7 @@ def list_customers_and_tickets():
     format_str = "{: <5} {: <15} {: <15} {: <14} {: <28} {: <30}"    
     display_formatted_row(["ID","Family Name","First Name","Birth Date","e-Mail", "Events (Tickets)"],format_str)  
     event_names = sorted(events.keys())
-    for customer in customers:
+    for customer in sorted_customers:
         tickets=[]
         for event_name in event_names:
             customer_data = events[event_name]["customers"]
@@ -63,8 +64,6 @@ def list_customers_and_tickets():
 def list_event_details():
     """
     List the events, show all details except Customers who have purchased tickets."""
-
-    sorted_events = {k: events[k] for k in sorted(events)} #  sort the events via dictionary comprehension, shortcut to create a new dictionary.
     format_str = "{: <20} {: <18} {: <15} {: <14} {: <28}"    
     display_formatted_row(["Event Name","Age Restriction","Event Date","Capacity","Tickets Sold"],format_str)  
     for event_name in sorted_events:
