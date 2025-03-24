@@ -102,10 +102,11 @@ def list_event_details(age=None):
             result.append({"id":event_id,"name":name ,"age_restriction":age_restriction,"event_date":date,"capacity":capacity,"tickets_sold":tickets_sold, "customers":event['customers']})
         else:
             display_formatted_row([name,age_restriction,date,capacity,tickets_sold],format_str)
-            input(continue_text)
     
     if age:
         return result
+    else:        
+        input(continue_text)
 
 def buy_tickets():
     """
@@ -224,7 +225,7 @@ def disp_menu():
 print("")
 print("### Disable the main program for now so I can do some dev ###")
 print("")
-buy_tickets()
+# list_event_details()
 
 
 # ------------ This is the main program ------------------------
@@ -233,35 +234,35 @@ buy_tickets()
 # Although you can add arguments to the function calls, if you wish.
 # Repeat this loop until the user enters an "X" or "x"
 
-# response = ""
-# while response != "X":
-#     disp_menu()
+response = ""
+while response != "X":
+    disp_menu()
     
-#     print("")
-#     # Display menu for the first time, and ask for response
-#     response = input("Please enter menu choice: ")    
-#     print("")
+    print("")
+    # Display menu for the first time, and ask for response
+    response = input("Please enter menu choice: ")    
+    print("")
 
-#     # Make the string uppercase either x or X is able to exit the program
-#     if response == "x":
-#         response = response.upper()
+    # Make the string uppercase either x or X is able to exit the program
+    if response == "x":
+        response = response.upper()
 
-#     if response == "1":
-#         list_all_customers()
-#     elif response == "2":
-#         list_customers_and_tickets()
-#     elif response == "3":
-#         list_event_details()
-#     elif response == "4":
-#         buy_tickets()
-#     elif response == "5":
-#         list_future_available_events()
-#     elif response == "6":
-#         add_new_customer()
-#     elif response != "X":
-#         print("\n*** Invalid response, please try again (enter 1-6 or X)")
+    if response == "1":
+        list_all_customers()
+    elif response == "2":
+        list_customers_and_tickets()
+    elif response == "3":
+        list_event_details()
+    elif response == "4":
+        buy_tickets()
+    elif response == "5":
+        list_future_available_events()
+    elif response == "6":
+        add_new_customer()
+    elif response != "X":
+        print("\n*** Invalid response, please try again (enter 1-6 or X)")
 
-#     print("")
+    print("")
 
-# print("\n=== Thank you for using the SELWYN EVENT TICKET SYSTEM! ===\n")
+print("\n=== Thank you for using the SELWYN EVENT TICKET SYSTEM! ===\n")
 
