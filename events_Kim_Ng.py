@@ -136,14 +136,49 @@ def buy_tickets():
                         age = datetime.now().year - target_customer[3].year
                         available_events = list_event_details(age)
                         print(available_events)
-                        # target_event_id = int(input('Please enter the Event ID: '))
-                        # while True:
-                        #     try:
-                        #         target_event_id = int(input('Please enter the Event ID: '))
-                        #         break
-                        #     except ValueError:
-                        #         print('Please enter an valid Event ID.')
+                        
+                        def buyTicket():
+                            while True:
+                                # 1st, check if input is an integer
+                                try:
+                                    target_event_id = int(input('Please enter the Event ID: '))
+                                except ValueError:
+                                    print('Please enter an valid event ID.')
+                                    continue # Skip the rest and retry
 
+                                # Then, check if event exists
+                                target_event = next((ev for ev in available_events if ev['id'] == target_event_id), None)
+                                if target_event is None:
+                                    print("Oops, event ID not found.")
+                                    continue
+
+                                try:
+                                    remain_tickets = int(target_event['capacity']) - int(target_event['tickets_sold'])
+                                    ticket_quantity = int(input(f'How many tickets you want to buy (min 0 ~ max {remain_tickets}): '))
+                                except ValueError:
+                                    print('Please enter a valid number.')
+                                    continue
+
+                                if ticket_quantity > remain_tickets or ticket_quantity <= 0:
+                                    print('Oops, please enter a valid number.')
+                                    continue
+                                else:
+                                    print(target_event)
+                                    print(f'Customer ID: {customer_id}, Event Name: {target_event["name"]}, Ticket Bought: {ticket_quantity}')
+                                    customer_data = sorted_events[target_event["name"]]['customers']
+                                    for index, customer in enumerate(customer_data):
+                                        if customer[0] == customer_id:
+                                            customer_data[index] = (customer_id, customer[1] + ticket_quantity)
+                                            break
+                                        else:
+                                            customer_data.append((customer_id, ticket_quantity))
+                                            break
+                                    print(customer_data)
+                                break
+                            print(sorted_events)
+                        
+                        buyTicket()
+                        print('Thank You for Purchasing!')
                         # print(sorted_events)
                 except ValueError:
                     print("Please enter an valid ID.")
