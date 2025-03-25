@@ -38,9 +38,11 @@ def list_all_customers(sorted=False):
     input(continue_text)
 
 def list_customers_and_tickets(do_not_continue=False):
+
+    print(customers)
     """
     Lists Customer details (including birth date), and the events they have purchased tickets to attend."""
-    
+    # sorted_customers = sorted(customers, key=lambda x: (x[2], x[1]))  # update the sorted events in case a new customer is added
     format_str = "{: <5} {: <15} {: <15} {: <14} {: <28} {: <30}"    
     display_formatted_row(["ID","Family Name","First Name","Birth Date","e-Mail", "Events (Tickets)"],format_str)  
     event_names = sorted(events.keys())
@@ -126,6 +128,7 @@ def buy_tickets():
                 try:
                     customer_id = int(customer_id)
                     print(f'Checking the given ID:({customer_id})...')
+                    # target_customer = next((customer for customer in sorted_customers if customer[0] == customer_id), None)
                     target_customer = next((customer for customer in sorted_customers if customer[0] == customer_id), None)
                     if target_customer == None:
                         print(f'ID: {customer_id} not found, please enter an valid ID.')
@@ -135,8 +138,10 @@ def buy_tickets():
                         # Found the customer, display events
                         # Check the DOB and today's date
                         age = datetime.now().year - target_customer[3].year
+                        
+                        # Filter the events, so the customer can only see the suitable events
                         available_events = list_event_details(age)
-                        print(available_events)
+                        # print(available_events)
                         
                         def buyTicket():
                             while True:
@@ -155,7 +160,7 @@ def buy_tickets():
 
                                 try:
                                     remain_tickets = int(target_event['capacity']) - int(target_event['tickets_sold'])
-                                    ticket_quantity = int(input(f'How many tickets you want to buy (min 0 ~ max {remain_tickets}): '))
+                                    ticket_quantity = int(input(f'How many tickets you want to buy (min 1 ~ max {remain_tickets}): '))
                                 except ValueError:
                                     print('Please enter a valid number.')
                                     continue
@@ -164,22 +169,28 @@ def buy_tickets():
                                     print('Oops, please enter a valid number.')
                                     continue
                                 else:
-                                    print(target_event)
                                     print(f'Customer ID: {customer_id}, Event Name: {target_event["name"]}, Ticket Bought: {ticket_quantity}')
                                     customer_data = sorted_events[target_event["name"]]['customers']
                                     for index, customer in enumerate(customer_data):
                                         if customer[0] == customer_id:
                                             customer_data[index] = (customer_id, customer[1] + ticket_quantity)
                                             break
-                                        else:
-                                            customer_data.append((customer_id, ticket_quantity))
-                                            break
-                                    print(customer_data)
+                                    else: # Only runs if the loop completes without breaking (no match found)
+                                        customer_data.append((customer_id, ticket_quantity))
+                                    sorted_events[target_event["name"]]['tickets_sold'] += ticket_quantity # update tickets sold
+                                    # print(customer_data)
                                 break
                             print(sorted_events)
                         
                         buyTicket()
-                        print('Thank You for Purchasing!')
+
+                        buy_more = get_yes_no_input('Do you want to buy more tickets? Please enter "y" for yes, "n" for no: ')
+                        
+                        if buy_more == 'Y':
+                            buy_tickets()
+                        else:
+                            print('Thank You for Purchasing!')
+                        
                         # print(sorted_events)
                 except ValueError:
                     print("Please enter an valid ID.")
@@ -199,7 +210,52 @@ def buy_tickets():
 def add_new_customer():
     """
     Add a new customer to the customer list."""
-    pass  # REMOVE this line once you have some function code (a function must have one line of code, so this temporary line keeps Python happy so you can run the code)
+
+    exit_prompt = '(or "x" to exit)'
+    def get_input(prompt):
+        value = input(prompt).strip()
+        if value.upper() == 'X':
+            raise SystemExit("Quiting...")
+        elif value == "":
+            get_input(prompt)
+        return value
+    
+    def dob_nz_format():
+        today = datetime.now()
+        while True:
+            user_input = input("Enter date (DD/MM/YYYY): ").strip()
+            try:
+                # parse with NZ format
+                date_obj = datetime.strptime(user_input, "%d/%m/%Y").date()
+                delta = today.date() - date_obj
+                # Approximate (doesn't account for leap years)
+                if delta >= timedelta(days=110*365) or delta < timedelta(days=0):
+                    raise ValueError
+                return date_obj
+            except ValueError:
+                print("Please enter a valid date. Please use DD/MM/YYYY (e.g., 24/03/1991)")
+
+    
+    try:
+        while True:
+            firstname = get_input(f'Please enter firstname {exit_prompt}: ')
+            lastname = get_input(f'Please enter lastname {exit_prompt}: ')
+            date_of_birth = dob_nz_format()
+            email = input(f'Please enter a valid email, optional, press enter to skip {exit_prompt}: ').strip()
+            if email == '':
+                email = 'N/A'
+
+            new_customer = [unique_id(), firstname.capitalize(), lastname.capitalize(), date_of_birth, email]
+
+            customers.append(new_customer)
+            sorted_customers.append(new_customer)
+
+            print("")
+            print("Thank you for you input.")
+            break
+    except SystemExit:
+        pass
+        
 
 def list_future_available_events():
     """
@@ -221,12 +277,18 @@ def disp_menu():
     print(" 6 - Add New Customer")
     print(" X - Exit (stops the program)")
 
+def get_yes_no_input(prompt):
+    while True:
+        response = input(prompt).strip().upper()
+        if response in ('Y', 'N'):
+            return response
+        print('Opps, something is wrong. Please enter "y" or "n".')
 
 print("")
 print("### Disable the main program for now so I can do some dev ###")
 print("")
-# list_event_details()
-
+# add_new_customer()
+# exit() # for dev
 
 # ------------ This is the main program ------------------------
 
