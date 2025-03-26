@@ -3,7 +3,7 @@
 # Student ID : 1167513 
 # ================================================================
  
-from datetime import datetime,timedelta,date     # datetime module is required for working with dates
+from datetime import datetime,timedelta     # datetime module is required for working with dates
 
 # Make the variables and function in set_data.py available in this code (without needing 'set_data.' prefix)
 from set_data import customers,events,unique_id,display_formatted_row 
@@ -12,9 +12,20 @@ from set_data import customers,events,unique_id,display_formatted_row
 # from set_data_alternative import customers,events,unique_id,display_formatted_row   
 
 continue_text = "\nPress Enter to continue."
-
 sorted_customers = sorted(customers, key=lambda x: (x[2], x[1])) # ordered by family name, then first name
-sorted_events = {k: events[k] for k in sorted(events)} #  sort the events via dictionary comprehension, shortcut to create a new dictionary.
+# build new dictionary and keep events
+# sorted_events = {k: events[k] for k in sorted(events)} #  sort the events by name via dictionary comprehension, shortcut to create a new dictionary.
+def sort_events_by_name():
+    # More readable function
+    # Get Sorted Keys
+    sorted_keys = sorted(events)
+    result = {}
+    for k in sorted_keys:
+        result[k] = events[k]
+    return result
+sorted_events = sort_events_by_name()
+today = datetime.now()
+# today = datetime.now() - timedelta(days=365) # dev, make today like a year ago for debugging
 
 def list_all_customers(sorted=False):
     """
@@ -41,7 +52,7 @@ def list_customers_and_tickets(do_not_continue=False):
     """
     Lists Customer details (including birth date), and the events they have purchased tickets to attend."""
     # sorted_customers = sorted(customers, key=lambda x: (x[2], x[1]))  # update the sorted events in case a new customer is added
-    format_str = "{: <5} {: <15} {: <15} {: <14} {: <28} {: <30}"    
+    format_str = "{: <7} {: <15} {: <15} {: <14} {: <35} {: <30}"    
     display_formatted_row(["ID","Family Name","First Name","Birth Date","e-Mail", "Events (Tickets)"],format_str)  
     event_names = sorted(events.keys())
     
@@ -70,13 +81,20 @@ def list_customers_and_tickets(do_not_continue=False):
     if do_not_continue == False:
         input(continue_text)
 
-def list_event_details(age=None):
+def list_event_details(age=None, sort_by_date=False):
     """
     List the events, show all details except Customers who have purchased tickets."""
     # age is an argument to filter the events for age_restriction, if this argument is provided, the event auto filtered by the date as well
 
     format_str = "{: <25} {: <18} {: <15} {: <14} {: <28}"    
-    format_str_with_id = "{: <10} {: <18} {: <15} {: <14} {: <28}"    
+    format_str_with_id = "{: <10} {: <25} {: <15} {: <14} {: <28}"    
+
+    if sort_by_date == True:
+        # sort events by date
+        sorted_items= sorted(events.items(), key=lambda item: (item[1]["event_date"], item[0]))
+        sorted_events = {k: v for k, v in sorted_items}
+    else:
+        sorted_events = sort_events_by_name() # make sure the event is sorted
     
     if age:
         display_formatted_row(["ID","Event Name","Event Date","Capacity","Tickets Sold"],format_str_with_id)  
@@ -88,12 +106,13 @@ def list_event_details(age=None):
         event = sorted_events[event_name]
         if age:
             # Check if the event has passed, the age restriction and if the tickets are sold up
-            if datetime.now().date() >= event['event_date'] or age < int(event['age_restriction']) or event["capacity"] - event['tickets_sold'] <= 0:
+            if today.date() >= event['event_date'] or age < int(event['age_restriction']) or event["capacity"] - event['tickets_sold'] <= 0:
                 continue
 
+        age_restriction_display = '--' if event['age_restriction'] == 0 else str(event['age_restriction'])
         event_id = index
         name=event_name
-        age_restriction=str(event['age_restriction'])
+        age_restriction=age_restriction_display
         date=event['event_date'].strftime("%d %b %Y")
         capacity=str(event['capacity'])
         tickets_sold=str(event['tickets_sold'])
@@ -135,7 +154,7 @@ def buy_tickets():
                     else:
                         # Found the customer, display events
                         # Check the DOB and today's date
-                        age = datetime.now().year - target_customer[3].year
+                        age = today.year - target_customer[3].year
                         
                         # Filter the events, so the customer can only see the suitable events
                         available_events = list_event_details(age)
@@ -218,7 +237,6 @@ def add_new_customer():
         return value
     
     def dob_nz_format():
-        today = datetime.now()
         while True:
             user_input = input("Enter date (DD/MM/YYYY): ").strip()
             try:
@@ -241,6 +259,8 @@ def add_new_customer():
             email = input(f'Please enter a valid email, optional, press enter to skip {exit_prompt}: ').strip()
             if email == '':
                 email = 'N/A'
+            # since the email is optional, I don't bother to check if this is an valid email
+            # BTW, if email is not compulsory, and there isn't an option to input a phone number, how to event company contact the customer?
 
             new_customer = [unique_id(), firstname.capitalize(), lastname.capitalize(), date_of_birth, email]
 
@@ -258,8 +278,12 @@ def list_future_available_events():
     """
     List all future events that have tickets available
     """
-    pass  # REMOVE this line once you have some function code (a function must have one line of code, so this temporary line keeps Python happy so you can run the code)
-
+    # In my previous list_event_details function
+    # if I provide an "age" as an argument, 
+    # The function would check if the event has passed, the age restriction and if the tickets are sold up
+    # Since I know the age restriction on the event, I just provided anything bigger than that and get the funciton working
+    list_event_details(age=34, sort_by_date=True)
+    input(continue_text)
 
 def disp_menu():
     """
@@ -281,11 +305,6 @@ def get_yes_no_input(prompt):
             return response
         print('Opps, something is wrong. Please enter "y" or "n".')
 
-print("")
-print("### Disable the main program for now so I can do some dev ###")
-print("")
-# add_new_customer()
-# exit() # for dev
 
 # ------------ This is the main program ------------------------
 
