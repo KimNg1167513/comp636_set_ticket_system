@@ -38,14 +38,13 @@ def list_all_customers(sorted=False):
     input(continue_text)
 
 def list_customers_and_tickets(do_not_continue=False):
-
-    print(customers)
     """
     Lists Customer details (including birth date), and the events they have purchased tickets to attend."""
     # sorted_customers = sorted(customers, key=lambda x: (x[2], x[1]))  # update the sorted events in case a new customer is added
     format_str = "{: <5} {: <15} {: <15} {: <14} {: <28} {: <30}"    
     display_formatted_row(["ID","Family Name","First Name","Birth Date","e-Mail", "Events (Tickets)"],format_str)  
     event_names = sorted(events.keys())
+    
     for customer in sorted_customers:
         tickets=[]
         for event_name in event_names:
@@ -58,14 +57,13 @@ def list_customers_and_tickets(do_not_continue=False):
         else:
             ticket_info = ', '.join(f"{ticket[0]} ({ticket[1]})" for ticket in tickets)  # Extract the first element
             tickets = ticket_info
-        customer.append(str(tickets))
 
         id = customer[0]
         fname = customer[1]
         famname = customer[2]
         birthdate = customer[3].strftime("%d %b %Y")
         email = customer[4]
-        event = customer[5]
+        event = str(tickets)
 
         display_formatted_row([id,famname,fname,birthdate,email,event],format_str)   
 
@@ -180,7 +178,6 @@ def buy_tickets():
                                     sorted_events[target_event["name"]]['tickets_sold'] += ticket_quantity # update tickets sold
                                     # print(customer_data)
                                 break
-                            print(sorted_events)
                         
                         buyTicket()
 
